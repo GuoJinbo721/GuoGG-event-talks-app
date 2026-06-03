@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Event Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1em 0;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .talk-item {
+            border: 1px solid #eee;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .talk-item.lunch {
+            background-color: #e0f7fa; /* Light blue for lunch */
+            border-color: #b2ebf2;
+        }
+
+        .talk-time {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .talk-title {
+            color: #0056b3;
+            margin-top: 0;
+        }
+
+        .talk-speakers, .talk-category, .talk-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .talk-category span {
+            display: inline-block;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            padding: 2px 6px;
+            margin-right: 5px;
+            margin-bottom: 3px;
+            font-size: 0.8em;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            background-color: #333;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tech Event 2026</h1>
+        <p>A day of insightful technical talks</p>
+    </header>
+
+    <main>
+        <section id="schedule-header">
+            <h2>Event Schedule</h2>
+            <div class="search-container">
+                <label for="category-search">Search by Category:</label>
+                <input type="text" id="category-search" placeholder="e.g., AI, Web Development">
+            </div>
+        </section>
+        
+        <section id="schedule-list">
+            <!-- Schedule items will be dynamically loaded here -->
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Tech Event. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const scheduleList = document.getElementById('schedule-list');
+            const categorySearchInput = document.getElementById('category-search');
+            let allTalks = [
+              {
+                "id": "talk1",
+                "title": "Introduction to AI in Software Engineering",
+                "speakers": ["Dr. Ada Lovelace"],
+                "category": ["AI", "Software Engineering"],
+                "duration": "60 minutes",
+                "description": "An overview of how artificial intelligence is transforming the field of software development, from automated code generation to intelligent testing."
+              },
+              {
+                "id": "talk2",
+                "title": "Scaling Web Applications with Microservices",
+                "speakers": ["John Doe", "Jane Smith"],
+                "category": ["Web Development", "Architecture", "Microservices"],
+                "duration": "60 minutes",
+                "description": "Explore best practices and common pitfalls in designing and scaling web applications using a microservices architecture."
+              },
+              {
+                "id": "talk3",
+                "title": "Demystifying Quantum Computing for Developers",
+                "speakers": ["Dr. Alice Quantum"],
+                "category": ["Quantum Computing", "Future Tech"],
+                "duration": "60 minutes",
+                "description": "A beginner-friendly introduction to quantum computing concepts and how developers can start experimenting with quantum algorithms."
+              },
+              {
+                "id": "lunch",
+                "title": "Lunch Break",
+                "speakers": [],
+                "category": ["Break"],
+                "duration": "60 minutes",
+                "description": "Enjoy a delicious lunch and network with fellow attendees."
+              },
+              {
+                "id": "talk4",
+                "title": "Practical DevOps: CI/CD Pipelines in Action",
+                "speakers": ["Bob Engineer"],
+                "category": ["DevOps", "CI/CD", "Automation"],
+                "duration": "60 minutes",
+                "description": "A hands-on session demonstrating how to build robust CI/CD pipelines using popular tools and practices."
+              },
+              {
+                "id": "talk5",
+                "title": "Securing Your APIs: A Comprehensive Guide",
+                "speakers": ["Charlie Cyber"],
+                "category": ["Security", "API"],
+                "duration": "60 minutes",
+                "description": "Learn essential strategies and techniques to protect your APIs from common vulnerabilities and attacks."
+              },
+              {
+                "id": "talk6",
+                "title": "The Future of Frontend Development with WebAssembly",
+                "speakers": ["Diana Dev"],
+                "category": ["Frontend", "WebAssembly"],
+                "duration": "60 minutes",
+                "description": "Discover the potential of WebAssembly to bring high-performance, compiled languages to the browser, revolutionizing frontend development."
+              }
+            ]; // allTalks array is now directly populated
+
+            const eventStartTime = new Date();
+            eventStartTime.setHours(10, 0, 0, 0); // Event starts at 10:00 AM
+
+            const TALK_DURATION_MINUTES = 60;
+            const TRANSITION_DURATION_MINUTES = 10;
+            const LUNCH_DURATION_MINUTES = 60;
+
+            // Function to format time for display
+            const formatTime = (date) => {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            };
+
+            // Function to render the schedule
+            const renderSchedule = (talksToRender) => {
+                scheduleList.innerHTML = ''; // Clear existing schedule
+
+                let currentTime = new Date(eventStartTime.getTime()); // Start with event start time
+
+                talksToRender.forEach(talk => {
+                    const talkItem = document.createElement('div');
+                    talkItem.classList.add('talk-item');
+
+                    let itemStartTime = new Date(currentTime.getTime());
+                    let itemEndTime;
+
+                    if (talk.id === 'lunch') {
+                        itemEndTime = new Date(currentTime.getTime() + LUNCH_DURATION_MINUTES * 60 * 1000);
+                        talkItem.classList.add('lunch');
+                    } else {
+                        itemEndTime = new Date(currentTime.getTime() + TALK_DURATION_MINUTES * 60 * 1000);
+                    }
+
+                    talkItem.innerHTML = `
+                        <div class="talk-time">${formatTime(itemStartTime)} - ${formatTime(itemEndTime)}</div>
+                        <h3 class="talk-title">${talk.title}</h3>
+                        ${talk.speakers && talk.speakers.length > 0 ? `<p class="talk-speakers"><strong>Speakers:</strong> ${talk.speakers.join(', ')}</p>` : ''}
+                        ${talk.category && talk.category.length > 0 ? `<p class="talk-category"><strong>Category:</strong> ${talk.category.map(cat => `<span>${cat}</span>`).join('')}</p>` : ''}
+                        <p class="talk-description">${talk.description}</p>
+                    `;
+                    scheduleList.appendChild(talkItem);
+
+                    currentTime = new Date(itemEndTime.getTime());
+
+                    // Add transition time if it's not the last talk and not a lunch break followed by a transition already accounted for
+                    if (talksToRender.indexOf(talk) < talksToRender.length - 1 && talk.id !== 'lunch') {
+                        const nextTalk = talksToRender[talksToRender.indexOf(talk) + 1];
+                        // Only add transition if the next item isn't lunch, or if it's lunch and we're just ending a talk
+                        if (nextTalk.id !== 'lunch') {
+                            currentTime = new Date(currentTime.getTime() + TRANSITION_DURATION_MINUTES * 60 * 1000);
+                        }
+                    } else if (talk.id === 'lunch' && talksToRender.indexOf(talk) < talksToRender.length - 1) {
+                        // If it's lunch, and there are more talks, add a transition after lunch.
+                        currentTime = new Date(currentTime.getTime() + TRANSITION_DURATION_MINUTES * 60 * 1000);
+                    }
+                });
+            };
+
+            // Initial render
+            renderSchedule(allTalks);
+
+            // Function to handle search
+            categorySearchInput.addEventListener('input', (event) => {
+                const searchTerm = event.target.value.toLowerCase();
+                const filteredTalks = allTalks.filter(talk => {
+                    if (talk.category) {
+                        return talk.category.some(cat => cat.toLowerCase().includes(searchTerm));
+                    }
+                    return false;
+                });
+                renderSchedule(filteredTalks);
+            });
+        });
+    </script>
+</body>
+</html>

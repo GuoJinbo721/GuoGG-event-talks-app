@@ -1,0 +1,13 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+
+# macOS
+.DS_Store
+
+# Gemini CLI temporary files
+.gemini/
+tmp/
